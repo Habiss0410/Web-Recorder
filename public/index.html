@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>HanTie • Christmas</title>
+  <style>
+    :root{
+      --bg-dark:#0f172a; --card-dark:#1e293b; --text-dark:#f1f5f9;
+      --primary:#ef4444; --primary-hover:#dc2626;
+      --green:#10b981; --green-hover:#059669;
+      --gold:#f59e0b;
+    }
+    html,body{height:100%; margin:0; padding:0; overflow:hidden;}
+    body{
+      display:flex; justify-content:center; align-items:center;
+      background:linear-gradient(to bottom, #0b1120, #1e293b); 
+      color:var(--text-dark);
+      font-family:sans-serif;
+      position:relative;
+    }
+    .card{
+      background:var(--card-dark); 
+      border-radius:20px; 
+      box-shadow:0 20px 50px rgba(0,0,0,0.5);
+      width:90%; max-width:500px; 
+      padding:30px; 
+      z-index:20; 
+      text-align: center;
+      border: 1px solid #334155;
+      max-height: 90vh;
+      overflow-y: auto; 
+    }
+    h1{ margin:0; font-size:2.5rem; color:var(--primary); font-weight:800; letter-spacing:1px; text-transform:uppercase; }
+    h2{ margin:0 0 5px; font-size:1.2rem; color:var(--gold); font-family:'Brush Script MT', cursive; }
+    .muted{ color:#94a3b8; font-size:0.9rem; margin-bottom:20px; }
+    .field{ margin-bottom:15px; text-align:left; }
+    label{ display:block; margin-bottom:5px; font-weight:600; font-size:0.9rem; }
+    input[type="text"]{ 
+      width:100%; padding:12px; 
+      border:1px solid #475569; border-radius:8px; 
+      background:#0f172a; color:#fff; box-sizing: border-box;
+    }
+    input:focus{ outline:2px solid var(--primary); border-color:transparent; }
+    .btn{ 
+      display:inline-block; width:100%; padding:14px; 
+      background:var(--primary); color:#fff; 
+      border:none; border-radius:10px; 
+      font-weight:700; font-size:1rem; cursor:pointer; 
+      transition:0.2s; margin-top:10px;
+    }
+    .btn:hover{ background:var(--primary-hover); transform:translateY(-2px); }
+    .btn:disabled{ background:#64748b; cursor:not-allowed; transform:none; }
+    .btn.alt{ background:var(--green); }
+    .btn.alt:hover{ background:var(--green-hover); }
+    #interview{ display:none; text-align:left; }
+    #playbackSection{ display:none; }
+    video{ width:100%; background:#000; border-radius:12px; }
+    #previewVideo { transform: scaleX(-1); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .btn-group { display:flex; gap:10px; margin-top:15px; }
+    .btn-group .btn { margin-top:0; }
+    #start-status, #uploadStatus { margin-top:15px; font-size:0.9rem; color:var(--gold); min-height:1.2em; }
+    .deco-row {
+      position: fixed; bottom: -10px; left: 0; right: 0;
+      height: 100px;
+      display: flex; justify-content: space-between; align-items: flex-end;
+      pointer-events: none; z-index: 10;
+      padding: 0 20px;
+    }
+    .deco-item { width: 60px; height: auto; animation: sway 3s ease-in-out infinite; transform-origin: bottom center; }
+    @keyframes sway { 0%,100%{transform:rotate(-5deg);} 50%{transform:rotate(5deg);} }
+    .flake{ position:fixed; top:-20px; color:#fff; opacity:0.8; pointer-events:none; z-index:5; animation:fall linear infinite; }
+    @keyframes fall{ to{ transform:translateY(110vh); } }
+  </style>
+</head>
+<body>
+
+  <!-- Trang trí dưới đáy -->
+  <div class="deco-row" id="deco-container"></div>
+
+  <!-- START SECTION -->
+  <div class="card" id="start-container">
+    <h2>Merry Xmas</h2>
+    <h1>HanTie</h1>
+    <p class="muted">Web Interview Recorder • Enter Token to begin</p>
+
+    <div class="field">
+      <label>Access Token</label>
+      <input id="token" type="text" value="12345" placeholder="Enter token..." />
+    </div>
+
+    <button id="startBtn" class="btn" type="button">Start Interview</button>
+    <p id="start-status"></p>
+  </div>
+
+  <!-- INTERVIEW SECTION -->
+<div class="card" id="interview" style="display:none;">
+    <h3 style="margin-top:0; color:var(--gold)">HanTie Interview</h3>
+  
+    <p id="questionText"
+       style="font-weight:bold; font-size:1.1rem; margin-bottom:10px;">
+      Đang tải...
+    </p>
+  
+    <video id="previewVideo" autoplay muted playsinline></video>
+  
+<!-- Buttons -->
+<div class="btn-group" style="justify-content:center; margin-top:20px;">
+    <button id="nextBtn" class="btn" type="button">Next</button>
+
+    <!-- Retry button -->
+    <button id="retryBtn" class="btn" type="button" style="display:none;">
+      Retry
+    </button>
+</div>
+
+<p id="uploadStatus"></p>
+
+<!-- Progress bar -->
+<div id="progressBar"
+     style="height:8px;background:#334155;border-radius:6px;margin-top:10px;overflow:hidden;">
+    <div id="progressFill"
+         style="height:100%;width:0%;background:#10b981;border-radius:6px;">
+    </div>
+</div>
+
+  
+  
+
+  <!-- PLAYBACK SECTION -->
+  <div class="card" id="playbackSection">
+    <h2 style="color:var(--gold)">Interview Results</h2>
+    <p class="muted">Below are the videos you just recorded.:</p>
+
+    <div id="videoGrid" style="display:grid; grid-template-columns:1fr; gap:20px; text-align:left;"></div>
+  </div>
+
+  <script defer src="./app.js"></script>
+
+  <!-- Xmas decoration script -->
+  <script>
+    (function(){
+      for(let i=0; i<50; i++){
+        const f=document.createElement('div'); f.className='flake'; f.textContent='❄';
+        f.style.left=Math.random()*100+'vw';
+        f.style.fontSize=(10+Math.random()*15)+'px';
+        f.style.animationDuration=(5+Math.random()*5)+'s';
+        f.style.animationDelay=(Math.random()*-10)+'s';
+        document.body.appendChild(f);
+      }
+      const box = document.getElementById('deco-container');
+      const treeSVG = `<svg viewBox="0 0 64 80"><path fill="#10b981" d="M32 4L6 40h52L32 4z"/><path fill="#059669" d="M32 16L10 50h44L32 16z"/><rect x="28" y="50" width="8" height="12" fill="#78350f"/></svg>`;
+      const giftSVG = `<svg viewBox="0 0 64 64"><rect x="8" y="28" width="48" height="28" rx="4" fill="#ef4444"/><rect x="28" y="28" width="8" height="28" fill="#fcd34d"/><rect x="8" y="24" width="48" height="8" fill="#fcd34d"/><circle cx="32" cy="24" r="6" fill="#fcd34d"/></svg>`;
+      const count = Math.floor(window.innerWidth / 70); 
+      for(let i=0; i<count; i++){
+        const div = document.createElement('div');
+        div.className = 'deco-item';
+        div.innerHTML = (i % 2 === 0) ? treeSVG : giftSVG;
+        div.style.animationDelay = (Math.random() * -2) + 's';
+        box.appendChild(div);
+      }
+    })();
+  </script>
+
+</body>
+</html>
